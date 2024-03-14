@@ -6,6 +6,7 @@ set -xv
 ### Setup Build System and GitHub
 
 wget -qO- uny.nu/pkg | bash -s buildsys
+mkdir /uny/tmp
 
 ### Getting Variables from files
 UNY_AUTO_PAT="$(cat UNY_AUTO_PAT)"
