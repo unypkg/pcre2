@@ -1,11 +1,19 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2034,SC1091
+# shellcheck disable=SC2034,SC1091,SC2086
 
+set -xv
 ######################################################################################################################
 ### Setup Build System and GitHub
 
 wget -qO- uny.nu/pkg | bash -s buildsys
-source "$UNY"/uny/build/github_conf
+
+### Getting Variables from files
+UNY_AUTO_PAT="$(cat UNY_AUTO_PAT)"
+export UNY_AUTO_PAT
+GH_TOKEN="$(cat GH_TOKEN)"
+export GH_TOKEN
+
+source /uny/uny/build/github_conf
 
 ######################################################################################################################
 ### Timestamp & Download
@@ -18,20 +26,19 @@ mkdir -pv /uny/sources
 cd /uny/sources || exit
 
 pkgname="pcre2"
-pkggit="https://github.com/PCRE2Project/pcre2.git refs/tags/v*"
+pkggit="https://github.com/PCRE2Project/pcre2.git refs/tags/pcre2-*"
 gitdepth="--depth=1"
 
 ### Get version info from git remote
-# shellcheck disable=SC2086
-latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "v[0-9.]*$" | tail --lines=1)"
-latest_ver="$(echo "$latest_head" | grep -o "v[0-9.]*" | sed "s|v||")"
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "pcre2-[0-9.]*$" | tail --lines=1)"
+latest_ver="$(echo "$latest_head" | grep -o "pcre2-[0-9.]*" | sed "s|pcre2-||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
 check_for_repo_and_create
 git_clone_source_repo
 
 cd pcre2 || exit
-
+./autogen.sh
 cd /uny/sources || exit
 
 version_details
@@ -41,9 +48,10 @@ archiving_source
 ### Build
 
 # unyc - run commands in uny's chroot environment
-# shellcheck disable=SC2154
 unyc <<"UNYEOF"
+set -xv
 source /uny/build/functions
+
 pkgname="pcre2"
 
 version_verbose_log_clean_unpack_cd
@@ -67,7 +75,7 @@ unset LD_RUN_PATH
     --disable-static
 
 make -j"$(nproc)"
-
+make -j"$(nproc)" check
 make install
 
 ####################################################
