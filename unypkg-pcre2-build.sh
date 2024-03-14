@@ -35,6 +35,10 @@ latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E 
 latest_ver="$(echo "$latest_head" | grep -o "pcre2-[0-9.]*" | sed "s|pcre2-||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
+### Check if the build should be continued
+version_details
+[[ ! -f /uny/sources/vdet-"$pkgname"-new ]] && echo "No newer version needs to be built." && exit
+
 check_for_repo_and_create
 git_clone_source_repo
 
@@ -42,7 +46,6 @@ cd pcre2 || exit
 ./autogen.sh
 cd /uny/sources || exit
 
-version_details
 archiving_source
 
 ######################################################################################################################
