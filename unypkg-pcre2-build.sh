@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2034,SC1091,SC2086
+# shellcheck disable=SC2034,SC1091,SC2086,SC2016
 
 set -xv
 ######################################################################################################################
@@ -106,5 +106,5 @@ for pkg in /uny/sources/vdet-*-new; do
     XZ_OPT="-9 --threads=0" tar -cJpf unypkg-"$pkg".tar.xz "$pkg"
 
     gh -R unypkg/"$pkg" release create "$pkgv"-"$uny_build_date_now" --generate-notes \
-        "$pkg/$pkgv/vdet#vdet - $vdet_content" unypkg-"$pkg".tar.xz "$pkg"-build.log "$source_archive_new"
+        "$pkg/$pkgv/vdet#vdet - "'$vdet_content'"" unypkg-"$pkg".tar.xz "$pkg"-build.log "$source_archive_new"
 done
