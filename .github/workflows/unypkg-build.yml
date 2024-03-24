@@ -17,5 +17,5 @@ jobs:
           echo "$GH_TOKEN" >GH_TOKEN
       - name: Run build script
         run: |
-          chmod +x unypkg-pcre2-build.sh
-          sudo ./unypkg-pcre2-build.sh
+          chmod +x unypkg-*-build.sh
+          sudo ./unypkg-*-build.sh
